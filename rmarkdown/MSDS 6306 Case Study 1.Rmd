@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 library(kableExtra)
+library(maps)
 ```
 ####Market for New Craft Brewery Market in the United States.
 
@@ -141,7 +142,7 @@ Shown now is the apparent relationship between the bitterness of the beer and it
 
 
 ggScatter = ( ggplot(beerandbrew, aes(x=IBU, y=ABV)) + geom_point() + 
-                labs(title="IBU vs ABV") + theme(plot.title = element_text(hjust = 0.5)) +
+                labs(title="IBU Plotted Against ABV") + theme(plot.title = element_text(hjust = 0.5)) +
                 geom_smooth())
 
 ggScatter
@@ -172,7 +173,25 @@ needAndPop = tail(mostneeded[order(mostneeded$pop2016),],3)
 needAndPop
 ```
 
+```{r stateVis}
+beerandbrew$State_Name = tolower(beerandbrew$State_Name)
+beerandbrew$State_Name = sub(".","", beerandbrew$State_Name)
+colnames(beerandbrew)[11] = "region"
 
+stateMap = map_data("state")
+mapdf = merge(stateMap, beerandbrew, by="region")
+mapdf["combined"] = mapdf$ABV*mapdf$IBU
+mapdf = mapdf[order(mapdf$order),]
+
+#Right now this is IBU, I will change it to what ever metrix we want to evaluate target states.
+#Thanks stackhub
+ggplot(mapdf, aes(x=long,y=lat,group=group))+
+  geom_polygon(aes(fill=IBU))+
+  geom_path()+ 
+  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+
+  coord_map()
+
+```
 
 
 
