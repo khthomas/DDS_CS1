@@ -15,7 +15,17 @@ This data was fairly close to tidy data. So the process used to clean and merge 
 However, this data can be found in the codebook linked within this document.
 
 ## Documents containted within this repo
+### Data Directory
 1. "Beers.csv" - this CSV file contains relatvent information regarding the beers (ABV, IBU, beer name, beer style, and serving size)
 2. "Breweries.csv" - this CSV file contains relavent information regarding the breweries (brewery name, state, and city of the brewery)
-3. A R Markdown file
-4. A HTML version of the RMD output
+3. "uspop.csv" - this CSV file contains US population data from the US Census.
+
+### RMarkdown Directory
+1. A R Markdown file
+2. A HTML version of the RMD output
+3. R Script(s) from each contributor showing their take on the project
+
+### Instructuons Directory
+1. CaseStudy1.pdf - the assignment from the customer
+2. CaseStudyRubric.docx - a set of criteria from the customer describing what is needed in the analysis
+3. GroupListings.xlsx - group information
