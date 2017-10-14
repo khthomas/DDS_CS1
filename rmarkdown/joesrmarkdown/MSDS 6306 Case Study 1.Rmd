@@ -1,0 +1,142 @@
+111---
+title: "MSDS6306 Case Study 1"
+author: "Joe Schueder"
+date: "October 6, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(kableExtra)
+```
+####Market for New Craft Brewery Market in the United States.
+
+#####Prepared by Joe Scheder and Kyle Thomas for New Brewery Inc.
+
+New Brewery Inc. would like to inroduce a new IPA with a high alochol content and bitterness. They would like to intoduce this to a large market that currently favors having breweries producing beers with these characteristics. 
+
+The primary goal of this analysis was to understand the craft brewery market in the United States. There were additional sub goals including:
+
+a. Merging two datasets so that linked beer production with brewery location to find the median International Biterness Unit (IBU) content of beers on a state by state basis. Find the median Alochol Content By Volumne (ABV) of beers on a state by state basis.
+b. Generate visualizations so that this data can be quickly and easily understood.
+ * Determine which state had the strongest beer (highest IBU)
+ * Determine which state had the most bitter beer (highest ABV) 
+ * Determine if there is a relationship between bitterness and alcohol content.
+
+The analysis is shown below.  
+
+```{r data import, include=TRUE}
+getwd()
+setwd ("C:/Users/jjschued/MSDS6306CaseStudy1/Raw Import Data/")
+beers <- read.csv(file = "Beers.csv", sep=",", header=TRUE)
+breweries <- read.csv(file = "Breweries.csv", sep=",", header=TRUE)
+
+#head(beers)
+kable(head(beers), "html", padding = 2, longtable = TRUE) %>%
+kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+
+#head(breweries)
+kable(head(breweries), "html", padding = 2, longtable = TRUE) %>%
+kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+``` 
+
+The number of breweries are present in each state
+
+```{r summarize by state}
+library(plyr)
+Statesum <- count(breweries, 'State')
+Statesum <- Statesum[order(-Statesum$freq),]
+colnames(Statesum) <- c("State", "Number of Breweries")
+kable(Statesum, "html", padding = 2, longtable = TRUE) %>%
+kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+
+```
+
+Data integrity checks were done. See the first 6 observations and the last six observations of the data.
+
+```{r mege}
+colnames(breweries)[1] <- "Brewery_id"
+beerandbrew <- merge(breweries, beers, by=c("Brewery_id"), all= FALSE)
+colnames(beerandbrew)[2] <- "Brewery"
+colnames(beerandbrew)[5] <- "Beer"
+
+#head(beerandbrew)
+
+kable(head(beerandbrew), "html", padding = 2, longtable = TRUE) %>%
+kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+#tail(beerandbrew)
+kable(tail(beerandbrew), "html", padding = 2, longtable = TRUE) %>%
+kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+```
+
+Additonal check of data were complete to make sure that data was present for most of the data being analyzed.  The number of blanks in each column is shown.
+```{r NACheck}
+#colSums(is.na(beerandbrew))
+kable(colSums(is.na(beerandbrew)), "html", padding = 2, longtable = TRUE) %>%
+kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+
+
+```
+
+In order to find the right market for the new beer.  The median alcohol content and international bitterness unit was computed for each state. Data is visulized in bar charts.
+
+```{r abvandibu}
+library("reshape2")
+abvandibu <- aggregate(beerandbrew[, 7:8], list(beerandbrew$State), median, na.rm=TRUE)
+abvandibu$ABV = abvandibu$ABV*100
+
+abvandibumelt <- melt(abvandibu, id=c("Group.1"))
+abvandibumelt <-abvandibumelt[order(-abvandibumelt$variable),]
+colnames(abvandibumelt) <- c("State", "ABVIBU", "Value")
+
+ABVMED <- abvandibumelt[abvandibumelt$ABVIBU == "ABV", ]
+IBUMED <- abvandibumelt[abvandibumelt$ABVIBU == "IBU", ]
+
+library("ggplot2")
+qplot(x=State, data=ABVMED, geom ="bar", weight = Value, fill = Value, ylab = 'Median ABV') + coord_flip()
+
+qplot(x=State, data=IBUMED, geom ="bar", weight=Value, fill = Value, ylab = 'IBU Median') + coord_flip()
+                      
+```
+
+The state that has the maximum alcoholic (ABV) beer:
+
+```{r getmax}
+maxabv <- beerandbrew[which.max(beerandbrew$ABV),]
+#maxabv$State
+kable(maxabv$State, "html", padding = 2, longtable = TRUE) %>%
+kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+```
+
+
+The state that has the most bitter (IBU) beer:
+
+```{r getmax2}
+ maxibu <- beerandbrew[which.max(beerandbrew$IBU),]
+#maxibu$State
+kable(maxibu$State, "html", padding = 2, longtable = TRUE) %>%
+kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+```
+
+Finally a summary statistics table for the ABV variable.
+```{R summarystatsabv}
+sumtable <- summary(beerandbrew$ABV)
+Statistics <- c("Min.", "1st Qu.",  "Median", "Mean", "3rd Qu.", "Max.", "NA's" )
+Values <- c(sumtable[1], sumtable[2],  sumtable[3], sumtable[4], sumtable[5], sumtable[6], sumtable[7] )
+sumdf <- data.frame(Statistics, Values)
+kable(sumdf[2], "html", padding = 2, longtable = TRUE) %>%
+kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+```
+
+Shown now is the apparent relationship between the bitterness of the beer and its alcoholic content.
+```{r scatter}
+scatter.smooth(beerandbrew$ABV, beerandbrew$IBU, ylab = "IBU",
+               xlab = "ABV", col= 4, main = "ABV vs IBU")
+```
+
+Based on the analyis of the data for breweries by state, there is reason to believe that states that there are certain states that have both high median alcohol content and bitter beers.  These states pimarily; A,B,C,D, E would be good states to intoduce the new beer.
+
+
+
+
