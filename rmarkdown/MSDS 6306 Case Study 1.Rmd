@@ -28,9 +28,13 @@ The analysis is shown below.
 
 ```{r data import, include=TRUE}
 getwd()
-setwd ("C:/Users/jjschued/MSDS6306CaseStudy1/Raw Import Data/")
+setwd ("C:\\Users\\kthomas\\Documents\\SMU\\DDS_CS1\\Data")
 beers <- read.csv(file = "Beers.csv", sep=",", header=TRUE)
 breweries <- read.csv(file = "Breweries.csv", sep=",", header=TRUE)
+
+#Bring in additional population data. Via Us Cencus (https://www.census.gov/data/tables/2016/demo/popest/state-total.html)
+uspop = read.csv("uspop.csv")
+colnames(uspop) = c("State_Name", "State", "pop2016")
 
 #head(beers)
 kable(head(beers), "html", padding = 2, longtable = TRUE) %>%
@@ -131,11 +135,63 @@ kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
 
 Shown now is the apparent relationship between the bitterness of the beer and its alcoholic content.
 ```{r scatter}
-scatter.smooth(beerandbrew$ABV, beerandbrew$IBU, ylab = "IBU",
-               xlab = "ABV", col= 4, main = "ABV vs IBU")
+#Changed old scatter plot to ggplot
+# scatter.smooth(beerandbrew$ABV, beerandbrew$IBU, ylab = "IBU",
+#                xlab = "ABV", col= 4, main = "ABV vs IBU")
+
+
+ggScatter = ( ggplot(beerandbrew, aes(x=IBU, y=ABV)) + geom_point() + 
+                labs(title="IBU vs ABV") + theme(plot.title = element_text(hjust = 0.5)) +
+                geom_smooth())
+
+ggScatter
 ```
 
 Based on the analyis of the data for breweries by state, there is reason to believe that states that there are certain states that have both high median alcohol content and bitter beers.  These states pimarily; A,B,C,D, E would be good states to intoduce the new beer.
+
+
+A basic market analysis will be conducted to determine which states could use a high ABV and high IBU beer. This will be done by first identifying the 10 states with the lowest median IBU and ABV beers. Then the top three states will be presented based on state population.
+
+```{r bestStates}
+#Merge us population with main dataframe
+
+beerandbrew = merge(beerandbrew, uspop, by = "State")
+
+#We need a way to compare IBU and ABV at the same time. This can be done by simply multiplying together 
+#IBU and ABV to make a combined measure. 
+
+colnames(abvandibu) = c("State", "ABV", "IBU")
+
+needBeer = merge(abvandibu, uspop, by="State")
+needBeer["combined"]= needBeer$IBU*needBeer$ABV
+
+mostneeded = head(needBeer[order(needBeer$combined),],10)
+
+needAndPop = tail(mostneeded[order(mostneeded$pop2016),],3)
+
+needAndPop
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
