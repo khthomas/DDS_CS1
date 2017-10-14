@@ -174,6 +174,7 @@ needAndPop
 ```
 
 ```{r stateVis}
+#I may need to redo this based on median values and not just the master dataframe
 beerandbrew$State_Name = tolower(beerandbrew$State_Name)
 beerandbrew$State_Name = sub(".","", beerandbrew$State_Name)
 colnames(beerandbrew)[11] = "region"
@@ -184,11 +185,12 @@ mapdf["combined"] = mapdf$ABV*mapdf$IBU
 mapdf = mapdf[order(mapdf$order),]
 
 #Right now this is IBU, I will change it to what ever metrix we want to evaluate target states.
-#Thanks stackhub
+#Thanks stackoverflow
 ggplot(mapdf, aes(x=long,y=lat,group=group))+
   geom_polygon(aes(fill=IBU))+
   geom_path()+ 
-  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+
+  #scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey50")+
+  scale_fill_gradient2(low="blue", mid="white", high="red", na.value="grey50", space="Lab", guide="colourbar")+
   coord_map()
 
 ```
