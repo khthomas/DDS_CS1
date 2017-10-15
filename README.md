@@ -31,4 +31,4 @@ However, this data can be found in the codebook linked within this document.
 3. GroupListings.xlsx - group information
 
 
-![What States Have Stong Bitter Beer](https://github.com/khthomas/DDS_CS1/tree/master/Data/beermap.png "What States Have Strong Beer?")
+!(https://github.com/khthomas/DDS_CS1/tree/master/Data/beermap.png)
