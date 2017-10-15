@@ -29,6 +29,4 @@ However, this data can be found in the codebook linked within this document.
 1. CaseStudy1.pdf - the assignment from the customer
 2. CaseStudyRubric.docx - a set of criteria from the customer describing what is needed in the analysis
 3. GroupListings.xlsx - group information
-
-
 ![What states have strong and bitter beer?](https://raw.githubusercontent.com/khthomas/DDS_CS1/master/Data/beermap.jpg)
