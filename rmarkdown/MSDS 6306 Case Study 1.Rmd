@@ -220,6 +220,8 @@ ggplot(mapdf2, aes(x=long,y=lat,group=group))+
   geom_path()+
   #scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey50")+
   scale_fill_gradient2(low="blue", mid="white", high="red", na.value="grey50", space="Lab", guide="colourbar")+
+  labs(fill="Beer ABV and IBU", title="Beer ABV and IBU combined weighting by State", xlab="", ylab="")+
+  theme(plot.title = element_text(hjust = 0.5))+
   coord_map()
 
 ```
