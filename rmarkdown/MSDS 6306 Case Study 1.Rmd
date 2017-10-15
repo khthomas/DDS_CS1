@@ -166,8 +166,11 @@ colnames(abvandibu) = c("State", "ABV", "IBU")
 needBeer = merge(abvandibu, uspop, by="State")
 needBeer["combined"]= needBeer$IBU*needBeer$ABV
 
+#Based only on a ABV and IBU
 mostneeded = head(needBeer[order(needBeer$combined),],10)
+mostneeded
 
+#highest Populations
 needAndPop = tail(mostneeded[order(mostneeded$pop2016),],3)
 
 needAndPop
@@ -189,6 +192,32 @@ mapdf = mapdf[order(mapdf$order),]
 ggplot(mapdf, aes(x=long,y=lat,group=group))+
   geom_polygon(aes(fill=IBU))+
   geom_path()+ 
+  #scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey50")+
+  scale_fill_gradient2(low="blue", mid="white", high="red", na.value="grey50", space="Lab", guide="colourbar")+
+  coord_map()
+
+####MEDIAN ONLY DATA#####
+needBeer$State_Name = tolower(needBeer$State_Name)
+needBeer$State_Name = sub(".", "", needBeer$State_Name)
+colnames(needBeer)[4] = "region"
+stateMap2 = map_data("state")
+mapdf2 = data.frame(merge(stateMap2, needBeer, by="region"), stringsAsFactors = FALSE)
+
+#This was an attempt to only show the three selected states.... more trouble than it was worth
+# for (x in 1:nrow(mapdf2)) {
+#   
+# if(! mapdf2[7,x]  %in% c(" NJ", " MO", " AZ"))  {
+#   mapdf2[11,x] = ""}
+#   
+#   #else {mapdf2[11,x] = mapdf2[11,x]}
+#   
+# }
+
+
+
+ggplot(mapdf2, aes(x=long,y=lat,group=group))+
+  geom_polygon(aes(fill=combined))+
+  geom_path()+
   #scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey50")+
   scale_fill_gradient2(low="blue", mid="white", high="red", na.value="grey50", space="Lab", guide="colourbar")+
   coord_map()
