@@ -31,5 +31,4 @@ However, this data can be found in the codebook linked within this document.
 3. GroupListings.xlsx - group information
 
 
-![What states have strong and bitter beer?](https://github.com/khthomas/DDS_CS1/tree/master/Data/beermap.png)
 ![What states have strong and bitter beer?](https://raw.githubusercontent.com/khthomas/DDS_CS1/master/Data/beermap.jpg)
